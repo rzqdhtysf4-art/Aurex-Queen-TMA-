@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurex Queen Mining</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #121212 0%, #1a1a2e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            width: 90%;
+            max-width: 420px;
+        }
+        h1 {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.2em;
+            margin: 0 0 8px 0;
+        }
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        .coin-animation {
+            font-size: 100px;
+            margin: 20px 0;
+            animation: spin 4s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        .balance {
+            font-size: 26px;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #ffd700;
+        }
+        .btn {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            border: none;
+            color: #000;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .btn:active {
+            transform: scale(0.92);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>AUREX QUEEN</h1>
+    <p class="subtitle">Ecosystem & Mining Platform</p>
+    
+    <div class="coin-animation">🪙</div>
+    
+    <div class="balance">Your Balance: <span id="balance">0.00</span> AQ</div>
+    
+    <button class="btn" onclick="startMining()">⛏️ START MINING</button>
+</div>
+
+<script>
+    function startMining() {
+        alert("✅ Mining Started!\n\nKeep the bot open for better rewards.");
+        // നീ പിന്നീട് real mining logic ഇവിടെ ചേർക്കാം
+    }
+</script>
+
+</body>
+</html>
