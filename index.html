@@ -13,105 +13,268 @@
             margin: 0;
             height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: space-between;
             overflow: hidden;
             user-select: none;
         }
-        .container {
+
+        /* 🛒 Top Market Bar Style */
+        .top-market-header {
+            width: 100%;
+            background: rgba(255, 215, 0, 0.08);
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            padding: 12px 0;
             text-align: center;
-            padding: 30px 20px;
-            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 110;
+        }
+        .market-top-btn {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            border: none; color: #000; padding: 10px 30px;
+            font-size: 15px; font-weight: bold; cursor: pointer;
+            border-radius: 50px; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+        .market-top-btn.active {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.4);
+        }
+
+        /* 📱 Main Content Window */
+        .content-area {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding-bottom: 80px;
+        }
+
+        .tab-content {
+            display: none;
+            text-align: center;
+            padding: 25px 20px;
+            background: rgba(255, 255, 255, 0.06);
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 215, 0, 0.25);
-            width: 92%;
-            max-width: 420px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            width: 88%;
+            max-width: 400px;
+            max-height: 60vh;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease-in-out;
         }
+
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
         h1 {
             background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 2.4em;
-            margin: 0 0 8px 0;
+            font-size: 2.3em;
+            margin: 0 0 5px 0;
         }
-        .subtitle { color: #aaa; margin-bottom: 25px; font-size: 0.95em; }
-        .coin-animation {
-            font-size: 130px;
-            margin: 15px 0 10px 0;
-            display: inline-block;
-            transition: transform 0.2s;
-        }
+
+        .subtitle { color: #aaa; margin-bottom: 20px; font-size: 0.9em; }
+
+        /* 🪙 Coin Animation */
+        .coin-animation { font-size: 130px; margin: 15px 0 10px 0; display: inline-block; transition: transform 0.2s; }
         .coin-animation.mining { animation: spin 1.6s linear infinite; }
         @keyframes spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
         
-        .balance {
-            font-size: 34px;
-            font-weight: bold;
-            color: #ffd700;
-            margin: 8px 0;
+        .balance { font-size: 34px; font-weight: bold; color: #ffd700; margin: 8px 0; }
+        .timer-box { font-size: 17px; color: #00ffcc; margin: 12px 0; font-weight: 500; }
+
+        /* 🛑 Lists Layout */
+        .list-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 14px 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.95em;
         }
-        .timer-box {
-            font-size: 17px;
-            color: #00ffcc;
-            margin: 12px 0;
-            font-weight: 500;
-        }
+        .reward-tag { color: #ffd700; font-weight: bold; }
+
+        /* 🔘 Buttons */
         .btn {
             background: linear-gradient(45deg, #ffd700, #ffaa00);
-            border: none;
-            color: #000;
-            padding: 16px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 50px;
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
-            width: 100%;
-            margin-top: 15px;
+            border: none; color: #000; padding: 16px 40px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            border-radius: 50px; width: 100%; margin-top: 15px;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
             transition: all 0.3s;
         }
-        .btn.claim-mode {
-            background: linear-gradient(45deg, #00ff88, #00ccff);
-            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.5);
+        .btn.claim-mode { background: linear-gradient(45deg, #00ff88, #00ccff); box-shadow: 0 6px 20px rgba(0, 255, 136, 0.5); }
+        .btn:disabled { background: #444; color: #aaa; cursor: not-allowed; box-shadow: none; }
+        .action-sm { background: #ffd700; color: #000; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        /* 🗺️ Bottom Navigation Bar Layout */
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #111122; border-top: 1px solid rgba(255, 215, 0, 0.15);
+            display: flex; justify-content: space-around; padding: 12px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.6); z-index: 100;
         }
-        .btn:disabled {
-            background: #444;
-            color: #aaa;
-            cursor: not-allowed;
-            box-shadow: none;
+        .nav-item {
+            background: none; border: none; color: #8e8e93;
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 12px; cursor: pointer; width: 22%; transition: all 0.2s;
         }
+        .nav-item .icon { font-size: 24px; margin-bottom: 4px; }
+        .nav-item.active { color: #ffd700; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>AUREX QUEEN</h1>
-    <p class="subtitle">Official 12 Hour Mining</p>
-    
-    <div id="coin" class="coin-animation">🪙</div>
-    
-    <div class="balance"><span id="balance">0.0000</span> AQ</div>
-    <div id="timer" class="timer-box">Ready to Mine</div>
-    
-    <button id="mineBtn" class="btn" onclick="handleButtonClick()">⛏️ START MINING</button>
-</div>
+    <!-- 🛒 TOP NAVIGATION MARKET HEADER -->
+    <div class="top-market-header">
+        <button id="top-market-btn" class="market-top-btn" onclick="switchTab('market')">🛍️ MARKET</button>
+    </div>
+
+    <!-- 📱 Main Container -->
+    <div class="content-area">
+        
+        <!-- 🏠 HOME (MINING) TAB -->
+        <div id="home-tab" class="tab-content active">
+            <h1>AUREX QUEEN</h1>
+            <p class="subtitle">Official 12 Hour Mining</p>
+            <div id="coin" class="coin-animation">🪙</div>
+            <div class="balance"><span id="balance">0.0000</span> AQ</div>
+            <div id="timer" class="timer-box">Ready to Mine</div>
+            <button id="mineBtn" class="btn" onclick="handleButtonClick()">⛏️ START MINING</button>
+        </div>
+
+        <!-- 🛍️ MARKET TAB (Top Requested) -->
+        <div id="market-tab" class="tab-content">
+            <h1>AUREX MARKET</h1>
+            <p class="subtitle">Trade your AQ coins for Premium Goods</p>
+            <div class="list-item">
+                <span>👑 Luxury Watch NFT</span>
+                <span class="reward-tag">500 AQ</span>
+                <button class="action-sm" onclick="alert('Market feature coming soon!')">Buy</button>
+            </div>
+            <div class="list-item">
+                <span>📈 TON/AQ Option</span>
+                <span class="reward-tag">100 AQ</span>
+                <button class="action-sm" onclick="alert('Connecting Liquidity Pool...')">Trade</button>
+            </div>
+            <div class="list-item">
+                <span>💎 Founder Membership</span>
+                <span class="reward-tag">250 AQ</span>
+                <button class="action-sm" onclick="alert('Coming soon!')">Get</button>
+            </div>
+        </div>
+
+        <!-- 💰 EARN TAB -->
+        <div id="earn-tab" class="tab-content">
+            <h1>EARN COINS</h1>
+            <p class="subtitle">Complete simple tasks to earn extra AQ</p>
+            <div class="list-item">
+                <span>Join Telegram Channel</span>
+                <span class="reward-tag">+0.20 AQ</span>
+                <button class="action-sm" onclick="alert('Verifying channel join...')">Start</button>
+            </div>
+            <div class="list-item">
+                <span>Follow Twitter (X)</span>
+                <span class="reward-tag">+0.15 AQ</span>
+                <button class="action-sm" onclick="alert('Opening X Twitter...')">Start</button>
+            </div>
+            <div class="list-item">
+                <span>Daily Welcome Bonus</span>
+                <span class="reward-tag">+0.10 AQ</span>
+                <button class="action-sm" onclick="alert('Bonus claimed successfully!')">Claim</button>
+            </div>
+        </div>
+
+        <!-- ⚡ UPGRADE TAB -->
+        <div id="upgrade-tab" class="tab-content">
+            <h1>UPGRADES</h1>
+            <p class="subtitle">Boost your mining speed and capacity</p>
+            <div class="list-item">
+                <span>Bronze Drill (2x Speed)</span>
+                <span class="reward-tag">Cost: 2.0 AQ</span>
+                <button class="action-sm" onclick="alert('Insufficient balance!')">Buy</button>
+            </div>
+            <div class="list-item">
+                <span>Silver Rig (5x Speed)</span>
+                <span class="reward-tag">Cost: 5.0 AQ</span>
+                <button class="action-sm" onclick="alert('Insufficient balance!')">Buy</button>
+            </div>
+        </div>
+
+        <!-- 👥 FRIENDS TAB -->
+        <div id="friends-tab" class="tab-content">
+            <h1>INVITE FRIENDS</h1>
+            <p class="subtitle">Earn 10% bonus from your referrals</p>
+            <div style="font-size: 60px; margin: 15px 0;">👥</div>
+            <div class="list-item" style="justify-content: center; font-weight: bold; color: #00ffcc;">
+                Total Referrals: 0 Users
+            </div>
+            <button class="btn" onclick="alert('Referral link copied to clipboard!')">🔗 INVITE A FRIEND</button>
+        </div>
+
+    </div>
+
+    <!-- 🗺️ Bottom Menu Bar Layout -->
+    <nav class="nav-bar">
+        <button id="nav-home" class="nav-item active" onclick="switchTab('home')">
+            <span class="icon">🏠</span><span>Home</span>
+        </button>
+        <button id="nav-earn" class="nav-item" onclick="switchTab('earn')">
+            <span class="icon">💵</span><span>Earn</span>
+        </button>
+        <button id="nav-upgrade" class="nav-item" onclick="switchTab('upgrade')">
+            <span class="icon">📈</span><span>Upgrade</span>
+        </button>
+        <button id="nav-friends" class="nav-item" onclick="switchTab('friends')">
+            <span class="icon">👥</span><span>Friends</span>
+        </button>
+    </nav>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
     tg.ready();
 
+    // 🗺️ TAB SWITCHING SYSTEM LOGIC
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        document.getElementById('top-market-btn').classList.remove('active');
+
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+        
+        if (tabName === 'market') {
+            document.getElementById('top-market-btn').classList.add('active');
+        } else {
+            document.getElementById(`nav-${tabName}`).classList.add('active');
+        }
+
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    // ⛏️ MINING SYSTEM LOGIC
     let totalBalance = parseFloat(localStorage.getItem('aq_total_balance')) || 0.0;
     let currentSessionProgress = 0.0;
     let startTime = parseInt(localStorage.getItem('mining_start_time')) || 0;
     let isMining = localStorage.getItem('is_mining') === 'true';
 
-    const AQ_PER_SECOND = 0.00001157; // 12 മണിക്കൂറിൽ 0.5 AQ വരാനുള്ള കൃത്യമായ കണക്ക്
-    const MINING_DURATION = 12 * 60 * 60 * 1000; // 12 Hours in Milliseconds
+    const AQ_PER_SECOND = 0.00001157; // 12 Hours = 0.5 AQ
+    const MINING_DURATION = 12 * 60 * 60 * 1000; 
 
-    // പേജ് ആദ്യം ലോഡ് ചെയ്യുമ്പോൾ ചെക്ക് ചെയ്യാൻ
+    // പേജ് റിഫ്രഷ് ചെയ്യുമ്പോൾ സ്റ്റാറ്റസ് ചെക്ക് ചെയ്യാൻ
     if (isMining && startTime > 0) {
         const elapsed = Date.now() - startTime;
         if (elapsed >= MINING_DURATION) {
@@ -127,7 +290,7 @@
 
     function handleButtonClick() {
         if (!isMining && startTime === 0) {
-            // ⛏️ MINING START ചെയ്യുമ്പോൾ
+            // Start Mining
             startTime = Date.now();
             isMining = true;
             localStorage.setItem('mining_start_time', startTime);
@@ -139,7 +302,7 @@
             updateUI();
             
         } else if (!isMining && startTime > 0) {
-            // 🎁 CLAIM REWARD ഞെക്കുമ്പോൾ
+            // Claim Reward
             totalBalance += 0.5;
             localStorage.setItem('aq_total_balance', totalBalance);
             
@@ -169,7 +332,7 @@
                 updateUI();
             } else {
                 currentSessionProgress = (elapsed / 1000) * AQ_PER_SECOND;
-                updateUI(); // ഇത് ഓരോ സെക്കൻഡിലും ടൈമറും ബാലൻസും ലൈവ് ആയി അപ്‌ഡേറ്റ് ചെയ്യും
+                updateUI(); 
             }
         }, 1000);
     }
@@ -183,8 +346,6 @@
 
         if (isMining) {
             const remaining = MINING_DURATION - (Date.now() - startTime);
-            
-            // മണിക്കൂർ, മിനിറ്റ്, സെക്കൻഡ് കറക്റ്റ് കണക്ക്
             const hours = Math.floor(remaining / 3600000);
             const minutes = Math.floor((remaining % 3600000) / 60000);
             const seconds = Math.floor((remaining % 60000) / 1000);
@@ -195,14 +356,12 @@
             btn.classList.remove('claim-mode');
             document.getElementById('coin').classList.add('mining');
         } else if (startTime > 0) {
-            // 12 മണിക്കൂർ കഴിഞ്ഞ അവസ്ഥ
             timerText.innerText = "🎁 Mining Completed! Claim Reward";
             btn.disabled = false;
             btn.innerText = "🎁 CLAIM 0.5 AQ";
             btn.classList.add('claim-mode');
             document.getElementById('coin').classList.remove('mining');
         } else {
-            // തുടക്ക അവസ്ഥ
             timerText.innerText = "Ready to Start 12 Hour Mining";
             btn.disabled = false;
             btn.innerText = "⛏️ START MINING";
