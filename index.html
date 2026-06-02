@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aurex Queen Mining</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #121212 0%, #1a1a2e 100%);
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
             overflow: hidden;
+            user-select: none;
         }
         .container {
             text-align: center;
@@ -23,37 +24,39 @@
             background: rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            width: 90%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            width: 92%;
             max-width: 420px;
         }
         h1 {
             background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 2.2em;
+            font-size: 2.4em;
             margin: 0 0 8px 0;
         }
-        .subtitle {
-            color: #aaa;
-            margin-bottom: 20px;
-        }
+        .subtitle { color: #aaa; margin-bottom: 25px; font-size: 0.95em; }
         .coin-animation {
-            font-size: 100px;
-            margin: 20px 0;
-            animation: spin 4s linear infinite;
+            font-size: 130px;
+            margin: 15px 0 10px 0;
             display: inline-block;
+            transition: transform 0.2s;
         }
-        @keyframes spin {
-            0% { transform: rotateY(0deg); }
-            100% { transform: rotateY(360deg); }
-        }
+        .coin-animation.mining { animation: spin 1.6s linear infinite; }
+        @keyframes spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+        
         .balance {
-            font-size: 26px;
+            font-size: 34px;
             font-weight: bold;
-            margin: 15px 0;
             color: #ffd700;
+            margin: 8px 0;
+        }
+        .timer-box {
+            font-size: 17px;
+            color: #00ffcc;
+            margin: 12px 0;
+            font-weight: 500;
         }
         .btn {
             background: linear-gradient(45deg, #ffd700, #ffaa00);
@@ -65,11 +68,19 @@
             cursor: pointer;
             border-radius: 50px;
             box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+            width: 100%;
+            margin-top: 15px;
             transition: all 0.3s;
-            margin-top: 10px;
         }
-        .btn:active {
-            transform: scale(0.92);
+        .btn.claim-mode {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.5);
+        }
+        .btn:disabled {
+            background: #444;
+            color: #aaa;
+            cursor: not-allowed;
+            box-shadow: none;
         }
     </style>
 </head>
@@ -77,21 +88,128 @@
 
 <div class="container">
     <h1>AUREX QUEEN</h1>
-    <p class="subtitle">Ecosystem & Mining Platform</p>
+    <p class="subtitle">Official 12 Hour Mining</p>
     
-    <div class="coin-animation">🪙</div>
+    <div id="coin" class="coin-animation">🪙</div>
     
-    <div class="balance">Your Balance: <span id="balance">0.00</span> AQ</div>
+    <div class="balance"><span id="balance">0.0000</span> AQ</div>
+    <div id="timer" class="timer-box">Ready to Mine</div>
     
-    <button class="btn" onclick="startMining()">⛏️ START MINING</button>
+    <button id="mineBtn" class="btn" onclick="handleButtonClick()">⛏️ START MINING</button>
 </div>
 
 <script>
-    function startMining() {
-        alert("✅ Mining Started!\n\nKeep the bot open for better rewards.");
-        // നീ പിന്നീട് real mining logic ഇവിടെ ചേർക്കാം
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
+
+    let totalBalance = parseFloat(localStorage.getItem('aq_total_balance')) || 0.0;
+    let currentSessionProgress = 0.0;
+    let startTime = parseInt(localStorage.getItem('mining_start_time')) || 0;
+    let isMining = localStorage.getItem('is_mining') === 'true';
+
+    const AQ_PER_SECOND = 0.00001157; // 12 മണിക്കൂറിൽ 0.5 AQ വരാനുള്ള കൃത്യമായ കണക്ക്
+    const MINING_DURATION = 12 * 60 * 60 * 1000; // 12 Hours in Milliseconds
+
+    // പേജ് ആദ്യം ലോഡ് ചെയ്യുമ്പോൾ ചെക്ക് ചെയ്യാൻ
+    if (isMining && startTime > 0) {
+        const elapsed = Date.now() - startTime;
+        if (elapsed >= MINING_DURATION) {
+            isMining = false;
+            localStorage.setItem('is_mining', 'false');
+            currentSessionProgress = 0.5;
+        } else {
+            runMiningLoop();
+        }
+    }
+    
+    updateUI();
+
+    function handleButtonClick() {
+        if (!isMining && startTime === 0) {
+            // ⛏️ MINING START ചെയ്യുമ്പോൾ
+            startTime = Date.now();
+            isMining = true;
+            localStorage.setItem('mining_start_time', startTime);
+            localStorage.setItem('is_mining', 'true');
+            
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            
+            runMiningLoop();
+            updateUI();
+            
+        } else if (!isMining && startTime > 0) {
+            // 🎁 CLAIM REWARD ഞെക്കുമ്പോൾ
+            totalBalance += 0.5;
+            localStorage.setItem('aq_total_balance', totalBalance);
+            
+            startTime = 0;
+            currentSessionProgress = 0;
+            localStorage.removeItem('mining_start_time');
+            localStorage.setItem('is_mining', 'false');
+            
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            alert("🎉 Congratulations! 0.5000 AQ Claimed Successfully!");
+            updateUI();
+        }
+    }
+
+    function runMiningLoop() {
+        document.getElementById('coin').classList.add('mining');
+        
+        const interval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            
+            if (elapsed >= MINING_DURATION) {
+                clearInterval(interval);
+                isMining = false;
+                localStorage.setItem('is_mining', 'false');
+                currentSessionProgress = 0.5;
+                document.getElementById('coin').classList.remove('mining');
+                updateUI();
+            } else {
+                currentSessionProgress = (elapsed / 1000) * AQ_PER_SECOND;
+                updateUI(); // ഇത് ഓരോ സെക്കൻഡിലും ടൈമറും ബാലൻസും ലൈവ് ആയി അപ്‌ഡേറ്റ് ചെയ്യും
+            }
+        }, 1000);
+    }
+
+    function updateUI() {
+        const displayBalance = totalBalance + currentSessionProgress;
+        document.getElementById('balance').innerText = displayBalance.toFixed(4);
+
+        const btn = document.getElementById('mineBtn');
+        const timerText = document.getElementById('timer');
+
+        if (isMining) {
+            const remaining = MINING_DURATION - (Date.now() - startTime);
+            
+            // മണിക്കൂർ, മിനിറ്റ്, സെക്കൻഡ് കറക്റ്റ് കണക്ക്
+            const hours = Math.floor(remaining / 3600000);
+            const minutes = Math.floor((remaining % 3600000) / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            
+            timerText.innerText = `⏳ ${hours}h ${minutes}m ${seconds}s remaining`;
+            btn.disabled = true;
+            btn.innerText = "⚡ MINING ACTIVE";
+            btn.classList.remove('claim-mode');
+            document.getElementById('coin').classList.add('mining');
+        } else if (startTime > 0) {
+            // 12 മണിക്കൂർ കഴിഞ്ഞ അവസ്ഥ
+            timerText.innerText = "🎁 Mining Completed! Claim Reward";
+            btn.disabled = false;
+            btn.innerText = "🎁 CLAIM 0.5 AQ";
+            btn.classList.add('claim-mode');
+            document.getElementById('coin').classList.remove('mining');
+        } else {
+            // തുടക്ക അവസ്ഥ
+            timerText.innerText = "Ready to Start 12 Hour Mining";
+            btn.disabled = false;
+            btn.innerText = "⛏️ START MINING";
+            btn.classList.remove('claim-mode');
+            document.getElementById('coin').classList.remove('mining');
+        }
     }
 </script>
-
 </body>
 </html>
